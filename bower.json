@@ -1,0 +1,11 @@
+{
+  "name": "game6",
+  "homepage": "https://github.com/SmartRaccoons/game6",
+  "private": true,
+  "dependencies": {
+    "babylonjs": "^2.5.0",
+    "microevent.js": "*",
+    "lodash": "^4.17.4",
+    "zepto": "^1.2.0"
+  }
+}
