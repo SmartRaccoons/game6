@@ -10,10 +10,10 @@ window.o.Game = class Game extends MicroEvent
   _render_before_loop: ->
 
   map: ->
-    window.o.ObjectCylinder({
-        top: 10
-        bottom: 20
-        height: 15
+    new window.o.ObjectCylinder({
+        top: 1
+        bottom: 4
+        height: 5
     })
 
   render: ->
@@ -32,6 +32,7 @@ window.o.Game = class Game extends MicroEvent
     @_camera = camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 100, BABYLON.Vector3.Zero(), @_scene)
     @_camera.setPosition(new BABYLON.Vector3(0, 0, -150))
     @_light = new BABYLON.HemisphericLight('Light', new BABYLON.Vector3(-40, 60, -100), @_scene)
+    # scene.enablePhysics(new BABYLON.Vector3(0, -9.81, 0), new BABYLON.CannonJSPlugin())
     window.App.events.trigger('game:init', scene, engine, @_light, @_camera)
 
   remove: ->

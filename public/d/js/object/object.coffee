@@ -37,7 +37,11 @@ window.o.Object = class Object extends MicroEvent
     @mesh = @mesh_build()
     @mesh._type = @name
     if @options.parent
-      @mesh.parent = @options.parent
+      @parent = @options.parent
+      if @parent.mesh
+        @mesh.parent = @parent.mesh
+    if @_imposter
+      @mesh.physicsImpostor = new BABYLON.PhysicsImpostor(@mesh, @_imposter, _.extend({}, {mass: 1}, @options.imposter), @scene())
     if @options.position
       @mesh.position = new BABYLON.Vector3(@options.position[0], @options.position[1] or 0, @options.position[2] or 0)
     if @options.action
@@ -90,7 +94,7 @@ window.o.ObjectSphere = class ObjectSphere extends Object
     BABYLON.Mesh.CreateSphere(@_name(), @options.segments, @options.diameter, @scene())
 
 
-window.o.ObjectBox = class ObjectSphere extends Object
+window.o.ObjectBox = class ObjectBox extends Object
   mesh_build: ->
     BABYLON.MeshBuilder.CreateBox(@_name(), {
       width: @options.dimension[0]
@@ -100,6 +104,7 @@ window.o.ObjectBox = class ObjectSphere extends Object
 
 
 window.o.ObjectCylinder = class ObjectCylinder extends Object
+  # _imposter: BABYLON.PhysicsImpostor.CylinderImpostor
   mesh_build: ->
     BABYLON.MeshBuilder.CreateCylinder(@_name(), {
       diameterTop: @options.top
