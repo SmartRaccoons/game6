@@ -2,15 +2,12 @@ window.o.ViewGame = class Game extends window.o.View
   className: 'game-container'
   template: """"""
 
+  constructor: ->
+    super
+    @_game = new window.o.Game()
+
   load: ->
-    if @game
-      @game.remove()
-    @game = new window.o.Game({
+    @_game.clear()
+    @_game.render({
       container: @$el
     })
-    @game.render()
-    @game.map()
-
-  remove: ->
-    @game.remove()
-    super

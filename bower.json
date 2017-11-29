@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "babylonjs": "^2.5.0",
-    "microevent.js": "*",
     "lodash": "^4.17.4",
     "zepto": "^1.2.0"
   }
