@@ -15,10 +15,9 @@ window.o.Game = class Game extends window.o.Game
     super
     @_camera.attachControl(document.body, true)
     if 'axis' of GET
-      @_show_axis(30)
+      @_show_axis()
 
   _show_axis: (size = 10)->
-    console.info 'show axis'
     scene = @_scene
     makeTextPlane = (text, color, size) ->
       dynamicTexture = new (BABYLON.DynamicTexture)('DynamicTexture', 50, scene, true)

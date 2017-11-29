@@ -96,10 +96,15 @@ window.o.ObjectSphere = class ObjectSphere extends Object
 
 window.o.ObjectBox = class ObjectBox extends Object
   mesh_build: ->
+    d = @options.dimension
+    if !d[1]?
+      d[1] = d[0]
+    if !d[2]?
+      d[2] = d[1]
     BABYLON.MeshBuilder.CreateBox(@_name(), {
-      width: @options.dimension[0]
-      height: @options.dimension[1]
-      depth: @options.dimension[2]
+      width: d[0]
+      height: d[1]
+      depth: d[2]
     }, @scene())
 
 
