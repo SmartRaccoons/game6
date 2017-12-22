@@ -6,7 +6,7 @@ _vectors = {
   'right': new V(1, 0, 0)
 }
 
-class Moving extends window.o.ObjectBox
+class Moving
   position_new: ->
     @position_get().add(_vectors[@options.direction])
 
@@ -16,7 +16,7 @@ class Moving extends window.o.ObjectBox
     @mesh.position.clone()
 
 
-class Empty extends Moving
+class Empty extends window.o.ObjectBox
   _default: {
     dimension: [1, 1, 1]
   }
@@ -27,6 +27,7 @@ class Empty extends Moving
 
 
 class Bullet extends window.o.ObjectCylinder
+  _.extend this::, Moving::
   _default: {
     top: 0.2
     bottom: 1
@@ -44,7 +45,8 @@ class Bullet extends window.o.ObjectCylinder
       @mesh.rotation.z = -Math.PI/2
 
 
-class Player extends Moving
+class Player extends window.o.ObjectBox
+  _.extend this::, Moving::
   _default: {
     dimension: [1, 1, 1]
     direction: Object.keys(_vectors)[0]
@@ -86,18 +88,32 @@ window.o.GameMap = class Map extends MicroEvent
       return @_map[c.z][c.y][c.x]
     return false
 
-  _switch: (p1, p2)->
+  _switch: (o)->
+    p1 = o.position_get()
+    p2 = o.position_new()
     [@_map[p1.z][p1.y][p1.x], @_map[p2.z][p2.y][p2.x]] = [@_map[p2.z][p2.y][p2.x], @_map[p1.z][p1.y][p1.x]]
+    o.position_update()
 
   _key: (code)->
     if _vectors[code]
       @player.options.direction = code
       if !@_get(@player.position_new())
-        @_switch(@player.position_get(), @player.position_new())
+        @_switch(@player)
         @player.position_update()
     if code is 'action'
       if !@_get(@player.position_new())
-        @_add(@player.position_new().asArray(), 'bullet', {direction: @player.options.direction})
+        bullet = @_add(@player.position_new().asArray(), 'bullet', {direction: @player.options.direction})
+        bullet._action({
+          click: =>
+            ob = @_get(bullet.position_new())
+            if !ob
+              @_switch(bullet)
+            if ob is 'wall'
+              bullet.remove()
+            if ob is 'player'
+              bullet.remove()
+              @player.remove()
+        })
 
   _render_before: ->
 
