@@ -31,7 +31,7 @@ window.o.Game = class Game extends MicroEvent
     @_scene = new BABYLON.Scene(@_engine)
     @_scene.clearColor = new BABYLON.Color4(0, 0, 0, 0)
     @_camera = new BABYLON.ArcRotateCamera("Camera", 0, 0, 100, BABYLON.Vector3.Zero(), @_scene)
-    @_camera.setPosition(new BABYLON.Vector3(4, -8, -15))
+    @_camera.setPosition(new BABYLON.Vector3(0, 0, -25))
     @_light = new BABYLON.HemisphericLight('Light', new BABYLON.Vector3(-40, -60, -100), @_scene)
     window.App.events.trigger('game:init', @_scene, @_engine, @_light, @_camera)
     # @_scene.enablePhysics(new BABYLON.Vector3(0, 0, 0), new BABYLON.CannonJSPlugin())

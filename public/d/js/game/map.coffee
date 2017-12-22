@@ -1,11 +1,22 @@
+V = BABYLON.Vector3
+_vectors = {
+  'up': new V(0, 1, 0)
+  'down': new V(0, -1, 0)
+  'left': new V(-1, 0, 0)
+  'right': new V(1, 0, 0)
+}
+
 class Moving extends window.o.ObjectBox
   position_new: ->
-    @mesh.position.clone().add(@options.direction)
+    @position_get().add(_vectors[@options.direction])
+
   position_update: -> @mesh.position = @position_new()
+
+  position_get: ->
+    @mesh.position.clone()
 
 
 class Empty extends Moving
-  # _imposter: BABYLON.PhysicsImpostor.BoxImpostor
   _default: {
     dimension: [1, 1, 1]
   }
@@ -15,36 +26,37 @@ class Empty extends Moving
     @color([c, c, c])
 
 
+class Bullet extends window.o.ObjectCylinder
+  _default: {
+    top: 0.2
+    bottom: 1
+    height: 1
+  }
+  constructor: ->
+    super
+    c = _.random(-50, 50) + 180
+    @color([c, c, _.random(-50, 50) + 180])
+    if @options.direction is 'down'
+      @mesh.rotation.z = Math.PI
+    if @options.direction is 'left'
+      @mesh.rotation.z = Math.PI/2
+    if @options.direction is 'right'
+      @mesh.rotation.z = -Math.PI/2
 
-class Bullet extends Empty
-  move: ->
 
-
-class Object extends Moving
-  # _imposter: BABYLON.PhysicsImpostor.BoxImpostor
+class Player extends Moving
   _default: {
     dimension: [1, 1, 1]
+    direction: Object.keys(_vectors)[0]
     color: [255, 0, 0]
   }
 
-  bullet: ->
-    if not @_bullet
-      @_bullet = new Bullet({position: @mesh.position.asArray(), direction: @options.direction.clone()})
-    @_bullet
-
-
-V = BABYLON.Vector3
-
-_vectors = {
-  'up': new V(0, 1, 0)
-  'down': new V(0, -1, 0)
-  'left': new V(-1, 0, 0)
-  'right': new V(1, 0, 0)
-}
 
 window.o.GameMap = class Map extends MicroEvent
   elements: {
     'wall': Empty
+    'player': Player
+    'bullet': Bullet
   }
   constructor: ->
     @_map = {}
@@ -59,29 +71,33 @@ window.o.GameMap = class Map extends MicroEvent
       @_add([-5, i, -1], 'wall')
       @_add([5, i, -1], 'wall')
 
-    @object = new Object({position: [0, 0, -1], direction: _vectors['up']})
+    @player = @_add([0, 0, -1], 'player')
 
-  _add: (c, element)->
+  _add: (c, element, params={})->
     if !@_map[c[2]]
       @_map[c[2]] = {}
     if !@_map[c[2]][c[1]]
       @_map[c[2]][c[1]] = {}
     @_map[c[2]][c[1]][c[0]] = element
-    new @elements[element]({position: c})
+    new @elements[element](_.extend({position: c}, params))
 
   _get: (c)->
     if @_map[c.z] and @_map[c.z][c.y]
       return @_map[c.z][c.y][c.x]
     return false
 
+  _switch: (p1, p2)->
+    [@_map[p1.z][p1.y][p1.x], @_map[p2.z][p2.y][p2.x]] = [@_map[p2.z][p2.y][p2.x], @_map[p1.z][p1.y][p1.x]]
+
   _key: (code)->
-    p = [@object.mesh.position.x, @object.mesh.position.y, @object.mesh.position.z]
     if _vectors[code]
-      @object.options.direction = _vectors[code]
-      if !@_get(@object.position_new())
-        @object.position_update()
+      @player.options.direction = code
+      if !@_get(@player.position_new())
+        @_switch(@player.position_get(), @player.position_new())
+        @player.position_update()
     if code is 'action'
-      bullet = @object.bullet()
+      if !@_get(@player.position_new())
+        @_add(@player.position_new().asArray(), 'bullet', {direction: @player.options.direction})
 
   _render_before: ->
 
