@@ -52,6 +52,9 @@ class Player extends window.o.ObjectBox
     direction: Object.keys(_vectors)[0]
     color: [255, 0, 0]
   }
+  constructor: ->
+    super
+    @_bullets = []
 
 
 window.o.GameMap = class Map extends MicroEvent
@@ -88,32 +91,41 @@ window.o.GameMap = class Map extends MicroEvent
       return @_map[c.z][c.y][c.x]
     return false
 
-  _switch: (o)->
-    p1 = o.position_get()
+  _switch: (o, check = false)->
     p2 = o.position_new()
+    if check and @_get(p2)
+      return
+    p1 = o.position_get()
     [@_map[p1.z][p1.y][p1.x], @_map[p2.z][p2.y][p2.x]] = [@_map[p2.z][p2.y][p2.x], @_map[p1.z][p1.y][p1.x]]
     o.position_update()
+
+  _remove: (o)->
+    p1 = o.position_get()
+    @_map[p1.z][p1.y][p1.x] = false
+    o.remove()
 
   _key: (code)->
     if _vectors[code]
       @player.options.direction = code
-      if !@_get(@player.position_new())
-        @_switch(@player)
-        @player.position_update()
+      @_switch(@player, true)
+      @player._bullets.forEach (b)=> @_move_bullet(b)
     if code is 'action'
       if !@_get(@player.position_new())
         bullet = @_add(@player.position_new().asArray(), 'bullet', {direction: @player.options.direction})
-        bullet._action({
-          click: =>
-            ob = @_get(bullet.position_new())
-            if !ob
-              @_switch(bullet)
-            if ob is 'wall'
-              bullet.remove()
-            if ob is 'player'
-              bullet.remove()
-              @player.remove()
-        })
+        @player._bullets.push bullet
+        # bullet._action({
+        #   click: => @_move_bullet(bullet)
+        # })
+
+  _move_bullet: (bullet)->
+    ob = @_get(bullet.position_new())
+    if !ob
+      @_switch(bullet)
+    if ob is 'wall'
+      @_remove(bullet)
+    if ob is 'player'
+      @_remove(bullet)
+      @_remove(@player)
 
   _render_before: ->
 
