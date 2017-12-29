@@ -47,5 +47,5 @@ window.App =
       'en': {}
       'lv': {}
     active: (->
-      return if window.location.href.indexOf('lang=en')>-1 then 'en' else 'lv'
+      return if window.location.href.indexOf('lang=lv')>-1 then 'lv' else 'en'
     )()
