@@ -9,7 +9,7 @@ compile :
 	grunt compile
 
 run :
-	python -m SimpleHTTPServer 8111
+	python -m SimpleHTTPServer 8112
 
 production :
 	grunt compile
