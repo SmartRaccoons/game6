@@ -43,9 +43,7 @@ window.App =
   events: new MicroEvent()
   classes: {}
   lang:
-    strings:
-      'en': {}
-      'lv': {}
+    strings: {}
     active: (->
-      return if window.location.href.indexOf('lang=lv')>-1 then 'lv' else 'en'
+      return if window.location.href.indexOf('lang=lg')>-1 then 'lg' else 'en'
     )()

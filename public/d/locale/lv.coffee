@@ -1,2 +1,0 @@
-App.lang.strings.lv =
-  '': ''
